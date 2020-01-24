@@ -55,11 +55,25 @@ Game.prototype.checkCollisions = function () {}
 ## Player.JS
 ```
 function Player() {}
+
+Player.prototype.move = function () {}
+
+Player.prototype.didCollide = function () {}
+
+Player.prototype.updatePosition = function () {}
+
+Player.prototype.gameOver = function () {}
+
+Player.prototype.draw = function () {}
 ```
 
 ## Enemy.JS
 ```
 function Enemy() {}
+
+Enemy.prototype.draw 
+
+Enemy.prototype.isInsideScreen
 ```
 
 # Task
