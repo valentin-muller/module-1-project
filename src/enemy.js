@@ -1,21 +1,32 @@
 "use strict";
 
-function Enemy(canvas, y, speed) {
+function Enemy(canvas, speed) {
+    //this.position = [];
+    
     this.canvas = canvas;
     this.ctx = this.canvas.getContext("2d");
-
-    this.size = 20;
-
-    this.x = this.canvas.width + this.size;
-    this.y = y;
+    
+    this.width = 53;
+    this.height = 400;
+    //this.gap = 85;
+    
+    this.x = this.canvas.width + this.height;
+    
+    this.topY = 0;
+    this.bottomY = 650;
+    this.y = 0;
+    
+    
+    this.size = this.width * this.height;
     this.speed = speed;
-}
+};
 
-Enemy.prototype.draw = function () {
+Enemy.prototype.draw = function (position) {
     this.ctx.fillStyle = "orange";
 
     // fillRect(x, y, width, height)
-    this.ctx.fillRect(this.x, this.y, this.size, this.size);
+    this.ctx.fillRect(this.x, position, this.width, this.height);
+    //this.ctx.fillRect(this.x, this.bottomY, this.width, this.height);
 };
 
 Enemy.prototype.updatePosition = function () {
@@ -23,5 +34,7 @@ Enemy.prototype.updatePosition = function () {
 };
 
 Enemy.prototype.isInsideScreen = function () {
-    return this.x + this.size > 0;
+    console.log("isInsideScreen")
+    return (this.x + this.width * this.height > 0)
+
 };

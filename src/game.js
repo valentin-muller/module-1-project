@@ -4,7 +4,8 @@ function Game() {
     this.canvas = null;
     this.ctx = null;
 
-    this.enemies = []; // push enemiy objects at random
+    this.topEnemies = []; // push enemiy objects at random
+    this.bottomEnemies = [];
     this.player = null;
 
     this.gameIsOver = false;
@@ -28,7 +29,7 @@ Game.prototype.start = function () {
     this.canvas.setAttribute("height", containerHeight);
 
     // Create the player
-    this.player = new Player(this.canvas, 3, 100);
+    this.player = new Player(this.canvas, 30000, 100);
 
     // Add keydown event listeners
     this.handleKeyDown = function (event) {
@@ -58,10 +59,14 @@ Game.prototype.startLoop = function () {
         this.scoreElement.innerHTML = this.score;
 
         if (Math.random() > 0.98) {
-            var randomY = this.canvas.height * Math.random();
-            var newEnemy = new Enemy(this.canvas, randomY, 5);
+            //var randomY = this.canvas.height * Math.random();
+            var topEnemy = new Enemy(this.canvas, 5);
+            var bottomEnemy = new Enemy(this.canvas, 5)
 
-            this.enemies.push(newEnemy);
+            this.topEnemies.push(topEnemy);
+            this.bottomEnemies.push(bottomEnemy);
+            console.log(this.topEnemies);
+            console.log(this.bottomEnemies);
         }
 
         // 2. Check if the player had collisions with enemies (check all of the enemies)
@@ -74,11 +79,15 @@ Game.prototype.startLoop = function () {
         // 5. Check if the enemies our out of the screen
         // [x, x, x ,x ]
 
-        this.enemies = this.enemies.filter(function (enemyObj) {
+        this.topEnemies = this.topEnemies.filter(function (enemyObj) {
             enemyObj.updatePosition(); // 4
             return enemyObj.isInsideScreen(); // 5
         });
 
+        this.bottomEnemies = this.bottomEnemies.filter(function (enemyObj) {
+            enemyObj.updatePosition(); // 4
+            return enemyObj.isInsideScreen(); // 5
+        });
         // 2. CLEAR THE CANVAS
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -87,8 +96,12 @@ Game.prototype.startLoop = function () {
         this.player.draw();
 
         // 2. Draw all of the enemies
-        this.enemies.forEach(function (enemyObj) {
-            enemyObj.draw();
+        this.topEnemies.forEach(function (enemyObj) {
+            enemyObj.draw(enemyObj.topY);
+        });
+
+        this.bottomEnemies.forEach(function (enemyObj) {
+            enemyObj.draw(enemyObj.bottomY);
         });
 
         // 4. TERMINATE THE LOOP IF THE GAME IS OVER
@@ -112,10 +125,23 @@ Game.prototype.gameOver = function () {
 Game.prototype.removeGameScreen = function () {};
 
 Game.prototype.checkCollisions = function () {
-    this.enemies.forEach(function (enemy) {
-        if (this.player.didCollide(enemy)) {
+    this.topEnemies.forEach(function (enemy) {
+        if (this.player.didCollide(enemy, "top")) {
             this.player.removeLife();
+            console.log("checking");
+            // move the enemy out of the screen
+            enemy.x = 0 - enemy.size;
 
+            if (this.player.lives === 0) {
+                this.gameOver();
+            }
+        }
+    }, this);
+
+    this.bottomEnemies.forEach(function (enemy) {
+        if (this.player.didCollide(enemy, "bottom")) {
+            this.player.removeLife();
+            console.log("checking");
             // move the enemy out of the screen
             enemy.x = 0 - enemy.size;
 
@@ -125,7 +151,6 @@ Game.prototype.checkCollisions = function () {
         }
     }, this);
 };
-
 Game.prototype.passGameOverCallback = function (gameOverFunc) {
     this.startOver = gameOverFunc;
 };
